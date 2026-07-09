@@ -1,0 +1,31 @@
+Technology
+algorithm,Step by step instructions to solve a problem
+keyboard,Input device with keys you type on
+compiler,Converts source code into machine code
+firewall,Protects a network from unauthorized access
+bandwidth,Amount of data that can be transferred over time
+debugging,Process of finding and fixing errors in code
+processor,The brain of a computer that executes instructions
+encryption,Process of converting data into a secret code
+
+#Hangman
+hangman,a popular game to play with words
+scaffold,Platform used for executions historically
+guess,What you do when trying to find the letter
+alphabet,Full set of 26 letters used in English
+letters,Individual characters that make up a word
+puzzle,A game or problem designed to test knowledge
+wordplay,Clever or witty use of words
+
+#CSE
+recursion,A function that calls itself
+pointer,Variable that stores a memory address
+array,Collection of elements stored in contiguous memory
+compiler,Translates source code into machine code
+database,Organized collection of structured data
+binary,Number system using only 0s and 1s
+function,Reusable block of code that performs a task
+variable,Named storage location for data
+loop,Structure that repeats a block of code
+stack,Data structure that follows last in first out
+
