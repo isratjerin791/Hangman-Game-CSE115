@@ -1,0 +1,45 @@
+REQUIREMENTS — Hangman Game (C)
+================================================================
+
+1. COMPILER
+----------------------------------------------------------------
+   A standard C compiler is required to build this project.
+
+   - GCC (GNU Compiler Collection) is recommended
+       Windows : MinGW or MSYS2
+       macOS   : Xcode Command Line Tools (includes GCC/Clang)
+       Linux   : GCC is typically pre-installed
+
+2. STANDARD LIBRARIES
+----------------------------------------------------------------
+   The following C standard libraries are used and are included
+   with any standard compiler installation (no separate install
+   required):
+
+   - stdio.h    : Input/output operations (printf, scanf, file I/O)
+   - stdlib.h   : Program control and random number generation
+   - string.h   : String handling and manipulation
+   - ctype.h    : Character case conversion
+   - time.h     : Time-based random seed generation
+   - windows.h  : Console encoding configuration (Windows only)
+
+3. TERMINAL REQUIREMENTS
+----------------------------------------------------------------
+   - A terminal with UTF-8 encoding support is recommended to
+     ensure the ASCII art banner and hangman graphics render
+     correctly.
+
+4. BUILD INSTRUCTIONS
+----------------------------------------------------------------
+   Compile the source files using the following command:
+
+       gcc main.c hangman.c -o hangman
+
+5. RUN INSTRUCTIONS
+----------------------------------------------------------------
+   Windows      :  hangman.exe
+   macOS/Linux  :  ./hangman
+
+================================================================
+
+
