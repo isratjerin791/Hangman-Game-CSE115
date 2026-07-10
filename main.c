@@ -1,6 +1,20 @@
 #include <stdio.h>
-int main()
-{
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "hangman.h"
 
- return 0;
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+int main(void) {
+    #ifdef _WIN32
+        SetConsoleOutputCP(CP_UTF8);
+    #endif
+
+    printBanner();
+
+    
+  return 0;
 }

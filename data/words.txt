@@ -1,4 +1,4 @@
-Technology
+#Technology
 algorithm,Step by step instructions to solve a problem
 keyboard,Input device with keys you type on
 compiler,Converts source code into machine code
