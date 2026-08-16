@@ -124,3 +124,144 @@ void loadCategories(Category categories[], int *categoryCount) {
     *categoryCount = c; // write the final total number of categories back to main()
                          // (a pointer is used here so this function can change
                          // main's categoryCount variable directly)
+
+
+// ISRAT JAHAN JERIN-------
+// =============== Print the HANGMAN ASCII art banner ====================
+// Just decorative text shown once when the program starts.
+void printBanner(void) {
+    printf("\n");
+    printf("  +-----------------------------------------------------------------+\n");
+    printf("  |                                                                 |\n");
+    printf("  |  ██╗  ██╗ █████╗ ███╗  ██╗ ██████╗ ███╗   ███╗ █████╗ ███╗  ██╗ |\n");
+    printf("  |  ██║  ██║██╔══██╗████╗ ██║██╔════╝ ████╗ ████║██╔══██╗████╗ ██║ |\n");
+    printf("  |  ███████║███████║██╔██╗██║██║  ███╗██╔████╔██║███████║██╔██╗██║ |\n");
+    printf("  |  ██╔══██║██╔══██║██║╚████║██║   ██║██║╚██╔╝██║██╔══██║██║╚████║ |\n");
+    printf("  |  ██║  ██║██║  ██║██║ ╚███║╚██████╔╝██║ ╚═╝ ██║██║  ██║██║ ╚███║ |\n");
+    printf("  |  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚══╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚══╝ |\n");
+    printf("  |                                                                 |\n");
+    printf("  |            ██████╗  █████╗ ███╗   ███╗███████╗                  |\n");
+    printf("  |           ██╔════╝ ██╔══██╗████╗ ████║██╔════╝                  |\n");
+    printf("  |           ██║  ███╗███████║██╔████╔██║█████╗                    |\n");
+    printf("  |           ██║   ██║██╔══██║██║╚██╔╝██║██╔══╝                    |\n");
+    printf("  |           ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗                  |\n");
+    printf("  |            ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝                  |\n");
+    printf("  |                                                                 |\n");
+    printf("  |          Don't get hung before the HANGMAN!                     |\n");
+    printf("  +----------------------------------------------------------------+\n\n");
+}
+
+// ----- Randomly choose a word from a category -----
+// Picks one random word/hint pair from the chosen category and sets up
+// a fresh GameState for a new round.
+void chooseWord(Category *category, GameState *game) {
+    srand(time(NULL));  // seed the random number generator using the current
+                         // time, so we get a different random word each run
+    int index = rand() % category->wordCount; // random index between 0 and wordCount-1
+
+    strcpy(game->word, category->words[index]); // copy the chosen word into game state
+    strcpy(game->hint, category->hints[index]);  // copy its matching hint
+    game->attemptsLeft = MAX_ATTEMPTS; // reset wrong-guess counter to max
+    game->score = 0;                   // reset score for this round
+
+    // Build the "guessed" display string as a row of underscores,
+    // one underscore per letter in the secret word.
+    int len = strlen(game->word);
+    for (int i = 0; i < len; i++) {
+        game->guessed[i] = '_';
+    }
+    game->guessed[len] = '\0'; // null terminator marks the end of the string
+}
+
+// ----- Display hangman ASCII art based on attempts left -----
+// A switch statement picks which picture to print depending on how many
+// wrong guesses remain (6 = nothing drawn yet, 0 = fully hung figure).
+void displayHangman(int attemptsLeft) {
+    switch (attemptsLeft) {
+        case 6:
+            printf("  +---+\n      |\n      |\n      |\n     ===\n");
+            break;
+        case 5:
+            printf("  +---+\n  O   |\n      |\n      |\n     ===\n");
+            break;
+        case 4:
+            printf("  +---+\n  O   |\n  |   |\n      |\n     ===\n");
+            break;
+        case 3:
+            printf("  +---+\n  O   |\n /|   |\n      |\n     ===\n");
+            break;
+        case 2:
+            printf("  +---+\n  O   |\n /|\\  |\n      |\n     ===\n");
+            break;
+        case 1:
+            printf("  +---+\n  O   |\n /|\\  |\n /    |\n     ===\n");
+            break;
+        case 0:
+            printf("  +---+\n  O   |\n /|\\  |\n / \\  |\n     ===\n");
+            break;
+    }
+}
+
+// ----- Display the current guessed word -----
+// Prints the word as the player currently sees it, e.g. "Word: _a__ha__"
+void displayWord(GameState *game) {
+    printf("Word: %s\n", game->guessed);
+}
+
+// ----- Process a single letter guess -----
+// Checks the guessed letter against every letter in the secret word.
+// If it matches anywhere, those positions get revealed in "guessed".
+// If it doesn't match at all, one attempt is subtracted.
+int guessLetter(GameState *game, char letter) {
+    letter = tolower(letter); // make guesses case-insensitive
+    int found = 0;            // tracks whether the letter was found anywhere
+    int len = strlen(game->word);
+
+    // Loop through every letter position in the secret word
+    for (int i = 0; i < len; i++) {
+        if (tolower(game->word[i]) == letter) {
+            game->guessed[i] = game->word[i]; // reveal that letter
+            found = 1;
+        }
+    }
+
+    if (!found) {
+        game->attemptsLeft--; // wrong guess costs one attempt
+    }
+
+    return found; // 1 if letter was correct, 0 if wrong
+}
+
+// ----- Check if the word has been fully guessed -----
+// Compares the "guessed" string to the real word - if they're identical,
+// every letter has been revealed and the player has won.
+int isWordGuessed(GameState *game) {
+    return strcmp(game->guessed, game->word) == 0;
+}
+
+// ----- Show hint (one-time use per game) -----
+void showHint(GameState *game) {
+    printf("Hint: %s\n", game->hint);
+}
+
+// ----- Update score based on win/loss -----
+// Only awards points if the round was won; more attempts remaining
+// means a higher score (10 points per attempt left).
+void updateScore(GameState *game, int won) {
+    if (won) {
+        game->score += game->attemptsLeft * 10;
+    }
+}
+
+// ----- Convert string to lowercase -----
+// Utility function that walks through every character of a string
+// and lowercases it in place. (Not currently called anywhere, but
+// kept available as a helper.)
+void toLowerCase(char *str) {
+    for (int i = 0; str[i]; i++) { // loop continues until it hits the '\0' end-of-string
+        str[i] = tolower(str[i]);
+    }
+}
+
+
+// TANZEEM HASAN--------
