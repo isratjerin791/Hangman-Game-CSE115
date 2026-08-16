@@ -1,7 +1,69 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+//Raiana Tabassum Roza--------
+#include <stdio.h>   // for printf, scanf, fopen, fgets, fprintf, etc. (input/output)
+#include <stdlib.h>  // for exit(), rand(), srand()
+#include <string.h>  // for strcpy, strcmp, strlen, strcspn (string handling)
+#include <ctype.h>   // for tolower() (converting characters to lowercase)
+#include <time.h>    // for time() (used to seed the random number generator)
+ 
+#ifdef _WIN32
+#include <windows.h> // only included on Windows, needed for SetConsoleOutputCP
+#endif
+ 
+// ===================== Constants =====================
+// #define creates a constant value that gets swapped in everywhere it's used
+// before the code is compiled. Using names instead of raw numbers makes the
+// code easier to read and easier to change later (change it in one place).
+#define MAX_WORD_LENGTH 50        // longest a single word or hint string can be
+#define MAX_ATTEMPTS 6            // how many wrong guesses are allowed before losing
+#define MAX_WORDS_PER_CATEGORY 20 // how many words fit inside one category
+ 
+// ===================== Structs =====================
+// A struct groups several related variables together under one name.
+ 
+// Category holds everything about one topic (e.g. "Technology"):
+// its name, the list of words in it, the matching hints, and how
+// many words are actually filled in.
+typedef struct {
+    char name[30];                                          // category title, e.g. "CSE"
+    char words[MAX_WORDS_PER_CATEGORY][MAX_WORD_LENGTH];     // 2D array: up to 20 words, each up to 50 chars
+    char hints[MAX_WORDS_PER_CATEGORY][MAX_WORD_LENGTH];     // matching hint for each word (same index)
+    int wordCount;                                           // how many words are actually stored
+} Category;
+ 
+// GameState holds everything about the CURRENT round being played:
+// the secret word, its hint, what the player has guessed so far,
+// how many wrong guesses are left, the score, and whether the
+// one-time hint has already been used.
+typedef struct {
+    char word[MAX_WORD_LENGTH];     // the secret word to guess
+    char hint[MAX_WORD_LENGTH];     // the hint for that word
+    char guessed[MAX_WORD_LENGTH];  // what the player sees, e.g. "_a__ha__" as letters are found
+    int attemptsLeft;               // wrong guesses remaining before game over
+    int score;                      // points earned this round
+    int hintUsed;                   // 0 = hint not used yet, 1 = hint already used
+} GameState;
+ 
+// ===================== Function Prototypes =====================
+// A prototype tells the compiler "this function exists and here is its
+// signature" before it actually sees the full code for it. This lets
+// functions call each other freely no matter what order they're written in
+// below, and lets main() (at the bottom) call functions defined above it.
+void loadCategories(Category categories[], int *categoryCount);
+void printBanner(void);
+void chooseWord(Category *category, GameState *game);
+void displayHangman(int attemptsLeft);
+void displayWord(GameState *game);
+int guessLetter(GameState *game, char letter);
+int isWordGuessed(GameState *game);
+void showHint(GameState *game);
+void updateScore(GameState *game, int won);
+void toLowerCase(char *str);
+void displayCategoryMenu(Category categories[], int categoryCount);
+int getCategoryChoice(int categoryCount);
+void playRound(GameState *game);
+void showGameOverMessage(GameState *game, int won);
+void saveScoreToFile(GameState *game);
+void showScoreHistory(void);
 
 //AYMAN-BIN-SALIM-----
 // ===================== Function Definitions =====================
