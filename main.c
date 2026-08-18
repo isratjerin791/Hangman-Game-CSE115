@@ -265,3 +265,88 @@ void toLowerCase(char *str) {
 
 
 // TANZEEM HASAN--------
+// ----- Show the numbered list of categories -----
+// Loops through all loaded categories and prints them as a numbered menu.
+void displayCategoryMenu(Category categories[], int categoryCount) {
+    printf("Choose a category:\n");
+    for (int i = 0; i < categoryCount; i++) {
+        printf("%d. %s\n", i + 1, categories[i].name);
+    }
+}
+
+// ----- Ask the player to pick a category and validate the input -----
+// Reads a number from the keyboard and keeps asking until the player
+// enters a valid category number.
+int getCategoryChoice(int categoryCount) {
+    int choice;
+    int valid = 0; // becomes 1 once a valid choice is entered
+
+    // Loop keeps asking until a valid number is typed
+   //---------While-loop-------------(1)
+    while (!valid) {
+        printf("Enter choice (number): ");
+        scanf("%d", &choice); // read an integer typed by the player
+
+        if (choice < 1 || choice > categoryCount) {
+            printf("Invalid choice. Please try again.\n");
+        } else {
+            valid = 1; // good input, stop looping
+        }
+    }
+
+    return choice;
+}
+
+// ----- Handle a single guess: get input, apply it, show feedback -----
+// This runs once per turn: show the current state, read one guess
+// (a letter, or '?' for a hint), and apply it.
+void playRound(GameState *game) {
+    displayHangman(game->attemptsLeft); // show the current hangman picture
+    displayWord(game);                  // show the word with blanks/found letters
+    printf("Attempts left: %d\n", game->attemptsLeft);
+
+    printf("Enter a letter to guess, or '?' for a hint: ");
+    char input[10];
+    scanf("%s", input); // read a short word/character from the keyboard
+
+    char letter = input[0]; // only the first character typed is used
+
+    if (letter == '?') {
+        if (game->hintUsed == 0) {
+            showHint(game);
+            game->hintUsed = 1; // mark hint as used so it can't be used again
+        } else {
+            printf("You've already used your hint!\n");
+        }
+    } else {
+        int found = guessLetter(game, letter);
+        if (!found) {
+            printf("Wrong guess!\n");
+        }
+    }
+
+    printf("\n");
+}
+
+// ----- Print the win/loss message and update the score -----
+// Called once after the game loop ends, to report the final outcome.
+void showGameOverMessage(GameState *game, int won) {
+    // Draw a line of dashes using a loop instead of a fixed string
+   //---------for-loop-------------(2)
+    for (int i = 0; i < 40; i++) {
+        printf("-");
+    }
+    printf("\n");
+
+    if (won) {
+        printf("Congratulations! You guessed the word: %s\n", game->word);
+        updateScore(game, 1);
+    } else {
+        displayHangman(0); // show the fully-hung figure on a loss
+        printf("Game over! The word was: %s\n", game->word);
+        updateScore(game, 0);
+    }
+
+    printf("Final score: %d\n", game->score);
+}
+
