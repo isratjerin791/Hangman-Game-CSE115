@@ -1,3 +1,5 @@
+//HANGMAN GAME
+
 //Raiana Tabassum Roza--------
 #include <stdio.h>   // for printf, scanf, fopen, fgets, fprintf, etc. (input/output)
 #include <stdlib.h>  // for exit(), rand(), srand()
@@ -350,3 +352,103 @@ void showGameOverMessage(GameState *game, int won) {
     printf("Final score: %d\n", game->score);
 }
 
+//Raiana Tabassum Roza
+
+// ----- Save the player's score to a history file (File I/O - write/append) -----
+// fopen() with "a" (append) opens scores.txt for writing new data onto
+// the end of the file, without erasing what was already saved before.
+// If the file doesn't exist yet, it gets created automatically.
+void saveScoreToFile(GameState *game) {
+    FILE *file = fopen("scores.txt", "a");
+
+    if (file == NULL) {
+        // fopen failed (e.g. no write permission) - warn but don't crash
+        printf("Warning: Could not save score to file.\n");
+        return;
+    }
+
+    // fprintf works like printf but writes to a file instead of the screen.
+    // Each line is stored as "word,score" e.g. "hangman,50"
+    fprintf(file, "%s,%d\n", game->word, game->score);
+    fclose(file); // always close a file once done writing to it
+}
+
+// ----- Read and display past scores from the history file (File I/O - read) -----
+// fopen() with "r" (read) opens scores.txt to read back everything that
+// was saved in previous runs of the game.
+void showScoreHistory(void) {
+    FILE *file = fopen("scores.txt", "r");
+
+    if (file == NULL) {
+        // No file exists yet, meaning this is the first time playing -
+        // that's fine, just skip showing history.
+        return;
+    }
+
+    char line[100];             // buffer to hold one line read from the file
+    char word[MAX_WORD_LENGTH]; // will hold the word part of that line
+    int score;                  // will hold the score part of that line
+    int round = 1;              // counts which past game we're displaying
+
+    printf("----- Past Games -----\n");
+    // fgets reads one line at a time from the file until there are no more
+    // lines left (it returns NULL at end-of-file, ending the loop).
+    while (fgets(line, sizeof(line), file)) {
+        // sscanf pulls the word and score back out of the "word,score" line.
+        // "%[^,]" means "grab everything up to the comma" (the word),
+        // then "%d" grabs the number after it (the score).
+        if (sscanf(line, "%[^,],%d", word, &score) == 2) {
+            printf("%d. Word: %-15s Score: %d\n", round, word, score);
+            round++;
+        }
+    }
+    printf("-----------------------\n\n");
+
+    fclose(file); // always close a file once done reading it
+}
+
+// ===================== Main =====================
+// The program's entry point - execution always starts here.
+int main(void) {
+    #ifdef _WIN32
+        SetConsoleOutputCP(CP_UTF8); // fixes special character display on Windows terminals
+    #endif
+
+    printBanner();       // show the title banner
+    showScoreHistory();  // show results from any previous games (File I/O read)
+
+    Category categories[10];   // array to hold up to 10 categories
+    int categoryCount = 0;     // will be set by loadCategories()
+    loadCategories(categories, &categoryCount); // fill in the word/hint data
+
+    char playAgain; // holds the player's y/n answer between rounds
+
+    // ----- Play Again loop -----
+    // Keeps starting new rounds until the player chooses not to continue.
+   //------------do-while loop--------------(3)
+    do {
+        displayCategoryMenu(categories, categoryCount); // show the numbered list
+        int choice = getCategoryChoice(categoryCount);  // ask the player to pick one
+
+        GameState game;         // holds all the state for this round
+        game.hintUsed = 0;       // player hasn't used their hint yet
+        chooseWord(&categories[choice - 1], &game); // pick a random word from the chosen category
+
+        // ----- Main game loop -----
+        // Keeps looping - showing the board and taking a guess - until either
+        // the player runs out of attempts, or the word is fully guessed.
+        while (game.attemptsLeft > 0 && !isWordGuessed(&game)) {
+            playRound(&game);
+        }
+
+        // ----- Game over -----
+        showGameOverMessage(&game, isWordGuessed(&game)); // print win/loss message + score
+        saveScoreToFile(&game);                            // save this round's result (File I/O write)
+
+        printf("Play again? (y/n): ");
+        scanf(" %c", &playAgain); // the space before %c skips leftover whitespace/newline
+
+    } while (playAgain == 'y' || playAgain == 'Y');
+
+    return 0; // 0 means the program finished successfully
+}
