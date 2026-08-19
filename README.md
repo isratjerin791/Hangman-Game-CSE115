@@ -22,8 +22,7 @@ A classic **Hangman word-guessing game** developed entirely in **C**. The projec
 ## 🚀 Key Features
 
 - **Classic Gameplay:** Guess letters one at a time to uncover a hidden word before running out of attempts.
-- **Modular Architecture:** Cleanly separated into `main.c`, `hangman.c`, and `hangman.h` for maintainable, team-friendly development.
-- **Dynamic Word Bank:** Words are loaded from an external `data/words.txt` file, making the word list easy to expand without touching game logic.
+- **Modular Architecture:** Cleanly separated into `main.c` for maintainable, team-friendly development.
 - **Randomized Word Selection:** A different word is chosen each playthrough for replayability.
 - **Limited Guess System:** Tracks incorrect guesses and ends the game once the guess limit is reached.
 - **Live Progress Display:** Shows the partially revealed word and previously guessed letters after every turn.
@@ -53,10 +52,9 @@ A classic **Hangman word-guessing game** developed entirely in **C**. The projec
 ```
 Hangman_Game_inC/
 ├── data/
-│   └── words.txt           # Word bank used by the game
+├── others       
 ├── main.c                  # Program entry point
-├── hangman.c               # Core game logic
-├── hangman.h               # Function declarations & shared definitions
+├── support               
 ├── requirements.txt        # Build/setup notes
 └── README.md               # Project documentation
 ```
